@@ -9,7 +9,7 @@ key = os.getenv("DB_API_KEY")
 
 supabase = create_client(url, key)
 
-def insert_player(name: str, rating: int=None, nationality: str=None, club: str=None, value: int=None):
+def create_player(name: str, rating: int=None, nationality: str=None, club: str=None, value: int=None):
     supabase.table("players").insert(
         {
             "name": name,
@@ -41,4 +41,31 @@ def update_player(name, rating=None, nationality=None, club=None, value=None):
 def delete_player(name):
     supabase.table("players").delete().eq("name", name).execute()
 
-print(find_player("Cristiano Ronaldo"))
+def create_user(name: str, currency: int=0, players_owned: list=None):
+    supabase.table("users").insert(
+        {
+            "name": name,
+            "currency": currency,
+            "players_owned": players_owned,
+        }
+    ).execute()
+
+def get_users():
+    users = supabase.table("users").select("*").execute()
+    return users.data
+
+def find_user(name):
+    user = supabase.table("users").select().eq("name", name).execute()
+    return user.data
+
+def update_user(name: str, currency: int=None, players_owned: list=None):
+    supabase.table("users").update(
+        {
+            "name": name,
+            "currency": currency,
+            "players_owned": players_owned
+        }
+    ).eq("name", name).execute()
+
+def delete_user(name):
+    supabase.table("users").delete().eq("name", name).execute()
