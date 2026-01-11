@@ -9,10 +9,11 @@ key = os.getenv("DB_API_KEY")
 
 supabase = create_client(url, key)
 
-def create_player(name: str, rating: int=None, nationality: str=None, club: str=None, value: int=None):
+def create_player(name: str, position: str=None, rating: int=None, nationality: str=None, club: str=None, value: int=None):
     supabase.table("players").insert(
         {
             "name": name,
+            "position": position,
             "rating": rating,
             "nationality": nationality,
             "club": club,
@@ -28,10 +29,11 @@ def find_player(name):
     player = supabase.table("players").select().eq("name", name).execute()
     return player.data
 
-def update_player(name, rating=None, nationality=None, club=None, value=None):
+def update_player(name, position=None, rating=None, nationality=None, club=None, value=None):
     supabase.table("players").update(
         {
             "rating": rating,
+            "position": position,
             "nationality": nationality,
             "club": club,
             "value": value,
