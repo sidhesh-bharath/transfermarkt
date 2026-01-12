@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import db
 
 def get_data():
     main_url = "https://www.ea.com/games/ea-sports-fc/ratings"
@@ -48,5 +49,9 @@ def get_data():
         print("Nation:", nation)
         print("Club:", club)
 
+        if db.find_player(full_name) == []:
+            db.create_player(full_name, final_pos[0], None, nation, club, None)
+        else:
+            continue
 
 get_data()

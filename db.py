@@ -15,7 +15,6 @@ def create_player(name: str, position: str=None, rating: int=None, nationality: 
         "nationality": nationality,
         "club": club,
         "value": value,
-        "auth_id": session.user.id
     }).execute()
 
 def get_players():
