@@ -1,0 +1,12 @@
+1 keyring
+2 token refresh/expiry stuff:
+Let Supabase auto-refresh during runtime
+
+Before program exits:
+
+read current session
+
+save tokens again
+
+3 logout function
+4 associate auth acc to public.users

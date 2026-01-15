@@ -1,2 +1,0 @@
-sign_up: add to db, setup etc
-then ig save acc
