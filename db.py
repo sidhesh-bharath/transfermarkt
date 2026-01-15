@@ -22,20 +22,20 @@ def get_players():
     players = supabase.table("players").select("*").execute()
     return players.data
 
-def find_player(name):
+def find_player(name: str):
     player = supabase.table("players").select().eq("name", name).execute()
     return player.data
 
-def update_player(name, **kwargs):
+def update_player(name: str, **kwargs):
     update_data = {k: v for k, v in kwargs.items() if v is not None}
     supabase.table("players").update(update_data).eq("name", name).execute()
 
-def delete_player(name):
+def delete_player(name: str):
     supabase.table("players").delete().eq("name", name).execute()
 
-def create_user(name: str, currency: int=0, players_owned: list=None):
+def create_user(auth_id: str, name: str=None, currency: int=0, players_owned: list=None):
     supabase.table("users").insert({
-        "auth_id": "hi",
+        "auth_id": auth_id,
         "name": name,
         "currency": currency,
         "players_owned": players_owned or [],
@@ -45,16 +45,16 @@ def get_users():
     users = supabase.table("users").select("*").execute()
     return users.data
 
-def find_user(name):
-    user = supabase.table("users").select().eq("name", name).execute()
+def find_user(auth_id: str):
+    user = supabase.table("users").select().eq("auth_id", auth_id).execute()
     return user.data
 
-def update_user(name: str, currency: int=None, players_owned: list=None):
+def update_user(auth_id: str, name: str=None, currency: int=None, players_owned: list=None):
     update_data = {"name": name}
     if currency is not None: update_data["currency"] = currency
     if players_owned is not None: update_data["players_owned"] = players_owned
     
-    supabase.table("users").update(update_data).eq("auth_id", "hi").execute()
+    supabase.table("users").update(update_data).eq("auth_id", auth_id).execute()
 
-def delete_user():
-    supabase.table("users").delete().eq("auth_id", "hi").execute()
+def delete_user(auth_id):
+    supabase.table("users").delete().eq("auth_id", auth_id).execute()

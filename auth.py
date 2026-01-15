@@ -1,3 +1,4 @@
+import db
 import os
 import keyring
 from dotenv import load_dotenv
@@ -32,10 +33,22 @@ def load_from_session():
 
 def user_sign_up(email, password):
     response = supabase.auth.sign_up({
-    "email" :email,
-    "password": password,
-})
+        "email" :email,
+        "password": password,
+    })
+    input("Press enter after confirming your Email... ")
+
+    response = supabase.auth.sign_in_with_password({
+        "email": email,
+        "password": password,
+    })
+
+    user_name = input("Enter a username: ")
+    db.create_user(response.user.id, user_name)
+
     save_session(response.session.access_token, response.session.refresh_token)
+
+    print(f"Signed up successfully as {user_name}")
 
 def user_sign_in(email, password):
     if not load_from_session():
@@ -46,7 +59,8 @@ def user_sign_in(email, password):
 
         save_session(response.session.access_token, response.session.refresh_token)
 
-    print(f"Logged in successfully as {email}")
+        user = db.find_user(response.user.id)[0]["name"]
+        print(f"Logged in successfully as {user}")
 
 def user_logout():
     supabase.auth.sign_out()
@@ -54,5 +68,3 @@ def user_logout():
         keyring.delete_password(KEYRING_SERVICE, "access_token")
         keyring.delete_password(KEYRING_SERVICE, "refresh_token")
     print("Logged out successfully")
-
-session = user_sign_in("sidheshbharath21@gmail.com", "Sidhesh@2011")
