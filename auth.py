@@ -50,8 +50,9 @@ def user_sign_in(email, password):
 
 def user_logout():
     supabase.auth.sign_out()
-    if os.path.exists("session.json"): 
-        os.remove("session.json")
+    if keyring.get_password(KEYRING_SERVICE, "access_token") and keyring.get_password(KEYRING_SERVICE, "refresh_token"):
+        keyring.delete_password(KEYRING_SERVICE, "access_token")
+        keyring.delete_password(KEYRING_SERVICE, "refresh_token")
     print("Logged out successfully")
 
 session = user_sign_in("sidheshbharath21@gmail.com", "Sidhesh@2011")
