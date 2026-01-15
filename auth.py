@@ -1,5 +1,5 @@
 import os
-import json
+import keyring
 from dotenv import load_dotenv
 from supabase import create_client
 
@@ -7,31 +7,28 @@ load_dotenv()
 
 SUPABASE_URL = os.getenv("DB_PROJECT_URL")
 SUPABASE_ANON_KEY = os.getenv("DB_API_KEY")
+KEYRING_SERVICE = "transfermarkt"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 def save_session(access_token, refresh_token):
-    session_data = {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-    }
+    keyring.set_password(KEYRING_SERVICE, "access_token", access_token)
+    keyring.set_password(KEYRING_SERVICE, "refresh_token", refresh_token)
 
-    with open("session.json", "w") as session_file:
-        json.dump(session_data, session_file, indent=4)
+def update_session():
+    if supabase.auth.get_session():
+        session = supabase.auth.get_session()
+        save_session(session.access_token, session.refresh_token)
 
 def load_from_session():
-    if os.path.exists("session.json"):
-        with open("session.json", "r") as session_file:
-            session_contents = session_file.read()
-            if not session_contents:
-                return False
-            else:
-                session_data = json.loads(session_contents)
-                supabase.auth.set_session(session_data["access_token"], session_data["refresh_token"])
-                
-                return True
+    if keyring.get_password(KEYRING_SERVICE, "access_token") and keyring.get_password(KEYRING_SERVICE, "refresh_token"):
+        access_token = keyring.get_password(KEYRING_SERVICE, "access_token")
+        refresh_token = keyring.get_password(KEYRING_SERVICE, "refresh_token")
+        
+        supabase.auth.set_session(access_token, refresh_token)
+        return True
     else:
-        return False
+        False
 
 def user_sign_up(email, password):
     response = supabase.auth.sign_up({
