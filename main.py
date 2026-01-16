@@ -27,7 +27,7 @@ def clear_screen(user_name=None, text=None):
 
 def do_action(user_name):
     clear_screen(user_name, "Dashboard")
-    action = int(input("""1. View Market
+    action = int(input("""1. View Markt
 2. Buy Players from Inventory
 3. Make Transactions
 4. Exit
@@ -37,9 +37,20 @@ Choose your action: """))
 
     if action == 1:
         clear_screen(user_name, "Markt")
+        
         player_data = db.get_players()
-        print(player_data)
+
+        for player in player_data:
+            print(f"""{player["id"]}. {player["rating"]}: {player["name"]}
+POS: {player["position"]} | NATION: {player["nationality"]} | CLUB: {player["club"]}
+VALUE: {player["value"]}  | INVENTORY: {player["inventory"]}
+""")
+
         input()
+    elif action == 2:
+        pass
+    elif action == 3:
+        pass
     elif action == 4:
         clear_screen(user_name, "Exitted")
         exit()
