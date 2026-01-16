@@ -1,6 +1,3 @@
-1 token refresh/expiry stuff:
-Let Supabase auto-refresh during runtime
-
 Before program exits:
 
 read current session
@@ -8,3 +5,4 @@ read current session
 save tokens again
 
 2 associate auth acc to public.users
+3 handle incorrect credentials
