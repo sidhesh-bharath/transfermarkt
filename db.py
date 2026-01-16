@@ -8,7 +8,7 @@ url = os.getenv("DB_PROJECT_URL")
 key = os.getenv("DB_API_KEY")
 supabase = create_client(url, key)
 
-def create_player(name: str, position: str=None, rating: int=None, nationality: str=None, club: str=None, value: int=None):
+def create_player(name: str, position: str=None, rating: int=None, nationality: str=None, club: str=None, value: int=None, inventory: int=10):
     supabase.table("players").insert({
         "name": name,
         "position": position,
@@ -16,6 +16,7 @@ def create_player(name: str, position: str=None, rating: int=None, nationality: 
         "nationality": nationality,
         "club": club,
         "value": value,
+        "inventory": inventory,
     }).execute()
 
 def get_players():

@@ -26,32 +26,39 @@ def load_from_session():
         access_token = keyring.get_password(KEYRING_SERVICE, "access_token")
         refresh_token = keyring.get_password(KEYRING_SERVICE, "refresh_token")
         
-        supabase.auth.set_session(access_token, refresh_token)
-        return True
+        session = supabase.auth.set_session(access_token, refresh_token)
+
+        user = session.user
+
+        return True, user.id
     else:
-        False
+        False, None
 
 def user_sign_up(email, password):
     response = supabase.auth.sign_up({
         "email" :email,
         "password": password,
     })
-    input("Press enter after confirming your Email... ")
 
+    print()
+    input("Press enter after confirming your Email... ")
+    
+    # if not verified keep checking and waiting for enter somehow
     response = supabase.auth.sign_in_with_password({
         "email": email,
         "password": password,
     })
 
+    print()
     user_name = input("Enter a username: ")
     db.create_user(response.user.id, user_name)
 
     save_session(response.session.access_token, response.session.refresh_token)
 
-    print(f"Signed up successfully as {user_name}")
+    return response.user.id
 
 def user_sign_in(email, password):
-    if not load_from_session():
+    if not load_from_session()[0]:
         response = supabase.auth.sign_in_with_password({
             "email": email,
             "password": password,
@@ -59,12 +66,13 @@ def user_sign_in(email, password):
 
         save_session(response.session.access_token, response.session.refresh_token)
 
-        user = db.find_user(response.user.id)[0]["name"]
-        print(f"Logged in successfully as {user}")
+        return response.user.id
 
 def user_logout():
     supabase.auth.sign_out()
     if keyring.get_password(KEYRING_SERVICE, "access_token") and keyring.get_password(KEYRING_SERVICE, "refresh_token"):
         keyring.delete_password(KEYRING_SERVICE, "access_token")
         keyring.delete_password(KEYRING_SERVICE, "refresh_token")
-    print("Logged out successfully")
+
+    print()
+    input("Logged out successfully...")

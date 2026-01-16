@@ -1,8 +1,0 @@
-Before program exits:
-
-read current session
-
-save tokens again
-
-2 associate auth acc to public.users
-3 handle incorrect credentials
