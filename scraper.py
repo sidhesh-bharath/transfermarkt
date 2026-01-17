@@ -13,7 +13,7 @@ def get_data():
     player_links = []
     page_no = 1
 
-    while True:
+    while page_no != 2:
         main_url = f"https://www.ea.com/games/ea-sports-fc/ratings?page={page_no}"
         print(f"\nScraping ratings page {page_no}")
 
@@ -63,9 +63,13 @@ def get_data():
         )
         nation = spans[5].get_text(strip=True)
         club = spans[7].get_text(strip=True)
+        data_ovr = soup_1.find_all("h4", class_="Typography_typography__BbhVA generated_headline5__Qi8nQ Typography_margins__Rl7Bs")
+        ovr_string = data_ovr[0].get_text(strip=True).split()
 
+        ovr = int(ovr_string[-1])      
         print("Nation:", nation)
         print("Club:", club)
+        print("Overall Rating:", ovr)
 
         if not db.find_player(full_name):
             db.create_player(full_name, final_pos[0], None, nation, club, None)
