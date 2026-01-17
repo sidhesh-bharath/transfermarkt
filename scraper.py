@@ -4,6 +4,7 @@ import db
 import time
 
 def get_data():
+
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                       "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -13,8 +14,8 @@ def get_data():
     player_links = []
     page_no = 1
 
-    while page_no != 2:
-        main_url = f"https://www.ea.com/games/ea-sports-fc/ratings?page={page_no}"
+    while page_no != 11:
+        main_url = f"https://www.ea.com/games/ea-sports-fc/ratings?gender=0&page={page_no}"
         print(f"\nScraping ratings page {page_no}")
 
         response = requests.get(main_url, headers=headers)
@@ -48,8 +49,14 @@ def get_data():
         soup_1 = BeautifulSoup(response_1.text, "lxml")
 
         data_names = soup_1.find_all("span", class_="AthletePage_playerName__WSrAu")
-        full_name = " ".join({tag.get_text(strip=True) for tag in data_names})
-        print(f"\nName: {full_name}")
+        seen = set()
+        names = []
+        for tag in data_names:
+            text = tag.get_text(strip=True)
+            if text not in seen:
+                seen.add(text)
+                names.append(text)
+        full_name = " ".join(names)
 
         data_position = soup_1.find_all(
             "div", class_="Tag_tag__AdaK1 generated_utility19__bAi0N Tag_lg__lL80n Tag_solid__4BJMQ"
@@ -63,17 +70,25 @@ def get_data():
         )
         nation = spans[5].get_text(strip=True)
         club = spans[7].get_text(strip=True)
+        if club == "Lombardia FC":
+            club = "Inter Milan"
+        elif club == "Milano FC":
+            club = "AC Milan"
+        else:
+            club = club
         data_ovr = soup_1.find_all("h4", class_="Typography_typography__BbhVA generated_headline5__Qi8nQ Typography_margins__Rl7Bs")
         ovr_string = data_ovr[0].get_text(strip=True).split()
-
-        ovr = int(ovr_string[-1])      
+        ovr = int(ovr_string[-1])
+        league = spans[6].get_text(strip=True)
+        print(f"\nName: {full_name}")
+        print("League:", league)
         print("Nation:", nation)
         print("Club:", club)
         print("Overall Rating:", ovr)
 
         if not db.find_player(full_name):
-            db.create_player(full_name, final_pos[0], None, nation, club, None)
+            db.create_player(full_name, final_pos[0], ovr, nation, club, None)
 
-get_data()
+
 if __name__ == "__main__":
     get_data()
