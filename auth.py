@@ -32,7 +32,7 @@ def load_from_session():
 
         return True, user.id
     else:
-        False, None
+        return False, None
 
 def user_sign_up(email, password):
     response = supabase.auth.sign_up({
