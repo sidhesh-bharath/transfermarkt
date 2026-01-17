@@ -4,52 +4,6 @@ import db
 import time
 
 def get_data():
-    mens_leagues = [
-    "Premier League",
-    "EFL Championship",
-    "EFL League One",
-    "EFL League Two",
-    "LALIGA EA SPORTS",
-    "Bundesliga",
-    "2. Bundesliga",
-    "3. Liga",
-    "Serie A Enilive",
-    "Serie B",
-    "Ligue 1 McDonald's",
-    "Ligue 2",
-    "Eredivisie",
-    "Liga Portugal",
-    "Belgian Pro League",
-    "Scottish Premiership",
-    "Austrian Bundesliga",
-    "Swiss Super League",
-    "Allsvenskan",
-    "Eliteserien",
-    "Ekstraklasa",
-    "Super Lig",
-    "Russian Premier League",
-    "Major League Soccer",
-    "MLS Next Pro",
-    "Roshn Saudi League",
-    "Liga MX",
-    "Campeonato Brasileiro Série A",
-    "Campeonato Brasileiro Série B",
-    "Argentine Primera División",
-    "Chilean Primera División",
-    "Categoría Primera A",
-    "J1 League",
-    "K League 1",
-    "Chinese Super League",
-    "Indian Super League",
-    "Persian Gulf Pro League",
-    "Egyptian Premier League",
-    "South African Premier Division",
-    "Botola Pro",
-    "Tunisian Ligue Professionnelle 1",
-    "A-League",
-    "New Zealand Football Championship"
-]
-
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -61,7 +15,7 @@ def get_data():
     page_no = 1
 
     while page_no != 11:
-        main_url = f"https://www.ea.com/games/ea-sports-fc/ratings?page={page_no}"
+        main_url = f"https://www.ea.com/games/ea-sports-fc/ratings?gender=0&page={page_no}"
         print(f"\nScraping ratings page {page_no}")
 
         response = requests.get(main_url, headers=headers)
@@ -116,14 +70,16 @@ def get_data():
         )
         nation = spans[5].get_text(strip=True)
         club = spans[7].get_text(strip=True)
+        if club == "Lombardia FC":
+            club = "Inter Milan"
+        elif club == "Milano FC":
+            club = "AC Milan"
+        else:
+            club = club
         data_ovr = soup_1.find_all("h4", class_="Typography_typography__BbhVA generated_headline5__Qi8nQ Typography_margins__Rl7Bs")
         ovr_string = data_ovr[0].get_text(strip=True).split()
         ovr = int(ovr_string[-1])
         league = spans[6].get_text(strip=True)
-        is_female = False
-        if league not in mens_leagues:
-            print("Skipping female player")
-            continue
         print(f"\nName: {full_name}")
         print("League:", league)
         print("Nation:", nation)
